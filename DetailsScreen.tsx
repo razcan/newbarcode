@@ -59,6 +59,11 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
         },
     ]);
 
+    const rowClick = async (item: any) => {
+        console.log("apasat", item)
+    }
+
+
     const from = page * itemsPerPage;
     const to = Math.min((page + 1) * itemsPerPage, itemData.length);
 
@@ -88,7 +93,7 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
 
                 {itemData.slice(from, to).map((item) => (
                     <DataTable.Row key={item.id}>
-                        <DataTable.Cell numeric>{item.id}</DataTable.Cell>
+                        <DataTable.Cell numeric onPress={() => rowClick(item)}>{item.id}</DataTable.Cell>
                         <DataTable.Cell>{item.Description}</DataTable.Cell>
                         <DataTable.Cell>{item.expirationDate}</DataTable.Cell>
                         <DataTable.Cell>{item.name}</DataTable.Cell>

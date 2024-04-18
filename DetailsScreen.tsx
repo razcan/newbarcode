@@ -1,11 +1,17 @@
 // screens/DetailsScreen.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, Pressable, StyleSheet, SafeAreaView } from 'react-native';
+import {
+    View,
+    // Button, 
+    Pressable, StyleSheet, SafeAreaView
+} from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './AppNavigator';
 import { Badge } from 'react-native-paper';
-import { DataTable } from 'react-native-paper';
-
+import {
+    DataTable, Button, Dialog, Portal, PaperProvider, Text, Avatar, Card, Divider
+} from 'react-native-paper';
+import QRCode from 'react-native-qrcode-svg';
 
 type DetailsScreenProps = {
     navigation: StackNavigationProp<RootStackParamList, 'Administrare'>;
@@ -13,16 +19,21 @@ type DetailsScreenProps = {
 
 const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
 
+    const [visible, setVisible] = React.useState(false);
+    const showDialog = () => setVisible(true);
+    const hideDialog = () => setVisible(false);
+
     const [page, setPage] = React.useState<number>(0);
     const [numberOfItemsPerPageList] = React.useState([5, 10, 20, 50]);
     const [itemsPerPage, onItemsPerPageChange] = React.useState(
         numberOfItemsPerPageList[0]
     );
     const [itemData, setItemData] = useState([]);
+    const [selectedItem, setSelectedItem] = useState([]);
 
     const fetchAllItems = async () => {
 
-        const response = await fetch(`https://chatty-carrots-enjoy.loca.lt/items`);
+        const response = await fetch(`https://six-lizards-fix.loca.lt/items`);
         const responseData = await response.json();
         console.log(responseData)
         setItemData(responseData);
@@ -31,6 +42,10 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
     useEffect(() => {
         fetchAllItems()
     }, []);
+
+    useEffect(() => {
+
+    }, [itemData]);
 
     const [items] = React.useState([
         {
@@ -60,7 +75,9 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
     ]);
 
     const rowClick = async (item: any) => {
-        console.log("apasat", item)
+        setSelectedItem(item);
+        showDialog();
+        console.log(item);
     }
 
 
@@ -72,9 +89,51 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
     }, [itemsPerPage]);
 
 
-
+    console.log(itemData, "asd")
     return (
         <SafeAreaView style={styles.container}>
+
+            <View>
+                <Button onPress={showDialog}>Show Dialog</Button>
+                <Portal>
+                    <Dialog visible={visible} onDismiss={hideDialog}>
+                        <Dialog.Title>Info Articol</Dialog.Title>
+                        <Dialog.Content>
+
+                            <Card>
+                                <Card.Title title="" subtitle="" />
+                                <Card.Content>
+                                    <View style={{ margin: 20 }}>
+                                        <QRCode value={selectedItem.qrCode} size={140} />
+                                        <Text> </Text>
+                                        <Divider />
+                                        <Text>ID: {selectedItem.id}</Text>
+                                        <Text>Name: {selectedItem.name}</Text>
+                                        <Text>Code: {selectedItem.code}</Text>
+                                        <Text>Description: {selectedItem.description}</Text>
+                                        <Text>QR Code: {selectedItem.qrCode}</Text>
+                                        <Text>Expiration Date: {selectedItem.expirationDate}</Text>
+                                        <Text>Zone: {selectedItem.zone}</Text>
+                                        <Text>Location 1: {selectedItem.location1}</Text>
+                                        <Text>Location 2: {selectedItem.location2}</Text>
+                                        <Text>Location 3: {selectedItem.location3}</Text>
+                                    </View>
+                                </Card.Content>
+
+                                <Card.Actions>
+                                    <Button>Tipareste</Button>
+                                    {/* <Button>Ok</Button> */}
+                                </Card.Actions>
+                            </Card>
+
+                        </Dialog.Content>
+                        <Dialog.Actions>
+                            <Button onPress={hideDialog}>Inchide</Button>
+                        </Dialog.Actions>
+                    </Dialog>
+                </Portal>
+            </View>
+
 
             <View style={styles.buttonContainer}>
                 <Button title="Scanare" onPress={() => navigation.navigate('Scanare')} />
@@ -82,23 +141,20 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
 
             <DataTable>
                 <DataTable.Header>
-                    <DataTable.Title numeric>Id</DataTable.Title>
-                    <DataTable.Title>Descriere</DataTable.Title>
-                    <DataTable.Title>Data Expirare</DataTable.Title>
+
                     <DataTable.Title>Denumire</DataTable.Title>
                     <DataTable.Title>QrCode</DataTable.Title>
-                    <DataTable.Title>Zona</DataTable.Title>
+                    <DataTable.Title numeric>Id</DataTable.Title>
 
                 </DataTable.Header>
 
                 {itemData.slice(from, to).map((item) => (
                     <DataTable.Row key={item.id}>
-                        <DataTable.Cell numeric onPress={() => rowClick(item)}>{item.id}</DataTable.Cell>
-                        <DataTable.Cell>{item.Description}</DataTable.Cell>
-                        <DataTable.Cell>{item.expirationDate}</DataTable.Cell>
+
+
                         <DataTable.Cell>{item.name}</DataTable.Cell>
                         <DataTable.Cell>{item.qrCode}</DataTable.Cell>
-                        <DataTable.Cell>{item.zone}</DataTable.Cell>
+                        <DataTable.Cell numeric onPress={() => rowClick(item)}>{item.id}</DataTable.Cell>
                     </DataTable.Row>
                 ))}
 

@@ -13,7 +13,6 @@ import { RootStackParamList } from './AppNavigator';
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera/next';
 import QRCode from 'react-native-qrcode-svg';
 import { useFonts } from 'expo-font';
-import { Link } from 'expo-router';
 
 type HomeScreenProps = {
     navigation: StackNavigationProp<RootStackParamList, 'Scanare'>;
@@ -162,9 +161,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 <Text style={{ fontFamily: 'Arial', fontSize: 30, color: 'black' }}>NIRO INVENTORY</Text>
 
             </View>
-
-            <Link href="/components/admin">admin</Link>
-            <Link href="/components/scan">scan</Link>
 
             <Button title="Scaneaza" onPress={setActiveCamera} />
 

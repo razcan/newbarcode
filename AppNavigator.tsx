@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 // import { HomeScreen } from './HomeScreen';
 import HomeScreen from "./HomeScreen"
 import DetailsScreen from "./DetailsScreen"
+import { Link } from 'expo-router';
 
 export type RootStackParamList = {
     Scanare: undefined;
@@ -19,8 +20,11 @@ const AppNavigator: React.FC = () => {
             <Stack.Navigator>
                 <Stack.Screen name="Scanare" component={HomeScreen} />
                 <Stack.Screen name="Administrare" component={DetailsScreen} />
+
             </Stack.Navigator>
         </NavigationContainer>
+
+
     );
 };
 

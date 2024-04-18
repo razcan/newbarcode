@@ -163,8 +163,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
             </View>
 
-            <Link href="/components/admin">admin</Link>
-            <Link href="/components/scan">scan</Link>
 
             <Button title="Scaneaza" onPress={setActiveCamera} />
 

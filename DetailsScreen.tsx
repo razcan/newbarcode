@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import {
     View,
     // Button, 
-    Pressable, StyleSheet, SafeAreaView
+    Pressable, StyleSheet, SafeAreaView, NativeModules
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './AppNavigator';
@@ -12,6 +12,13 @@ import {
     DataTable, Button, Dialog, Portal, PaperProvider, Text, Avatar, Card, Divider
 } from 'react-native-paper';
 import QRCode from 'react-native-qrcode-svg';
+// import PDFLib, { PDFDocument, PDFPage, PDFText } from 'react-native-pdf-lib';
+// import RNHTMLtoPDF from 'react-native-html-to-pdf';
+// import RNHTMLtoPDF from 'react-native-html-to-pdf';
+// import RNPrint from 'react-native-print';
+import { useReactToPrint } from 'react-to-print';
+import { useRef } from 'react';
+
 
 type DetailsScreenProps = {
     navigation: StackNavigationProp<RootStackParamList, 'Administrare'>;
@@ -31,11 +38,25 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
     const [itemData, setItemData] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
 
+
+
+
+    const contentToPrint = useRef(null);
+    const handlePrint = useReactToPrint({
+        documentTitle: "Print This Document",
+        onBeforePrint: () => console.log("before printing..."),
+        onAfterPrint: () => console.log("after printing..."),
+        removeAfterPrint: true,
+    });
+
+
+
+
     const fetchAllItems = async () => {
 
         const response = await fetch(`https://six-lizards-fix.loca.lt/items`);
         const responseData = await response.json();
-        console.log(responseData)
+        // console.log(responseData)
         setItemData(responseData);
     };
 
@@ -77,7 +98,7 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
     const rowClick = async (item: any) => {
         setSelectedItem(item);
         showDialog();
-        console.log(item);
+        // console.log(item);
     }
 
 
@@ -89,12 +110,12 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
     }, [itemsPerPage]);
 
 
-    console.log(itemData, "asd")
+    // console.log(itemData, "asd")
     return (
         <SafeAreaView style={styles.container}>
 
             <View>
-                <Button onPress={showDialog}>Show Dialog</Button>
+
                 <Portal>
                     <Dialog visible={visible} onDismiss={hideDialog}>
                         <Dialog.Title>Info Articol</Dialog.Title>
@@ -103,7 +124,7 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
                             <Card>
                                 <Card.Title title="" subtitle="" />
                                 <Card.Content>
-                                    <View style={{ margin: 20 }}>
+                                    <View ref={contentToPrint} style={{ margin: 20 }}>
                                         <QRCode value={selectedItem.qrCode} size={140} />
                                         <Text> </Text>
                                         <Divider />
@@ -121,8 +142,9 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
                                 </Card.Content>
 
                                 <Card.Actions>
-                                    <Button>Tipareste</Button>
-                                    {/* <Button>Ok</Button> */}
+                                    <Button onPress={() => {
+                                        handlePrint(null, () => contentToPrint.current);
+                                    }}>Tipareste</Button>
                                 </Card.Actions>
                             </Card>
 
@@ -136,7 +158,13 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
 
 
             <View style={styles.buttonContainer}>
-                <Button title="Scanare" onPress={() => navigation.navigate('Scanare')} />
+                {/* <Button title="Scanare" onPress={() => navigation.navigate('Scanare')} /> */}
+
+                <Button icon="camera" mode="contained" onPress={() => navigation.navigate('Scanare')}>
+                    Scanare
+                </Button>
+
+
             </View>
 
             <DataTable>

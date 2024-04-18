@@ -91,7 +91,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </CameraView>
             )}
 
-            <Button title="Administrare" onPress={() => navigation.navigate('Administrare')} />
+            <View style={styles.buttonContainer}>
+                <Button title="Admin" onPress={() => navigation.navigate('Administrare')} />
+            </View>
+
+
 
             {/* <Pressable
                 onPress={() => navigation.navigate('Administrare')}
@@ -167,9 +171,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // backgroundColor: 'black',
+        backgroundColor: '#e0ffff',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    buttonContainer: {
+        position: 'absolute', // Position the button absolutely within its container
+        top: 0, // Align the button to the bottom
+        right: 0, // Align the button to the right
     },
     barcode: {
         backgroundColor: 'yellow',

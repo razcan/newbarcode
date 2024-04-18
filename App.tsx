@@ -1,10 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import AppNavigator from './AppNavigator';
-
+import { AppRegistry } from 'react-native';
+import { PaperProvider } from 'react-native-paper';
 
 export default function App() {
-  return <AppNavigator />;
+  return (
+    <PaperProvider>
+      <AppNavigator />
+    </PaperProvider>
+  );
+  // return <AppNavigator />;
 }
 
 

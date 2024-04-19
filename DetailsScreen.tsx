@@ -370,7 +370,8 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
                 </DataTable.Header>
 
                 {itemData.slice(from, to).map((item) => (
-                    <DataTable.Row key={item.id} onPress={() => rowClick(item)}>
+                    <DataTable.Row key={item.id} onPress={() => rowClick(item)}
+                    >
 
 
                         <DataTable.Cell>{item.name}</DataTable.Cell>

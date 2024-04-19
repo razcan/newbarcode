@@ -151,11 +151,16 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                             </View>
                         )}
 
-                        <Pressable
+                        {/* <Pressable
                             style={[styles.button, styles.buttonClose]}
                             onPress={() => setModalVisible(!modalVisible)}>
                             <Text style={styles.textStyle}>Inchide</Text>
-                        </Pressable>
+                        </Pressable> */}
+
+                        <Button mode="contained" icon="close-circle"
+                            onPress={() => setModalVisible(!modalVisible)}>
+                            Inchide
+                        </Button>
                     </View>
                 </View>
             </Modal>

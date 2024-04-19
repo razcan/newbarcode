@@ -9,7 +9,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './AppNavigator';
 import { Badge } from 'react-native-paper';
 import {
-    DataTable, Button, Dialog, Portal, PaperProvider, Text, Avatar, Card, Divider
+    DataTable, Button, Dialog, Portal, PaperProvider, Text, TextInput, Avatar,
+    Card, Divider
 } from 'react-native-paper';
 import QRCode from 'react-native-qrcode-svg';
 // import PDFLib, { PDFDocument, PDFPage, PDFText } from 'react-native-pdf-lib';
@@ -18,7 +19,8 @@ import QRCode from 'react-native-qrcode-svg';
 // import RNPrint from 'react-native-print';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
-
+import { DatePickerModal } from 'react-native-paper-dates';
+import axios from 'axios';
 
 type DetailsScreenProps = {
     navigation: StackNavigationProp<RootStackParamList, 'Administrare'>;
@@ -30,8 +32,12 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
     const showDialog = () => setVisible(true);
     const hideDialog = () => setVisible(false);
 
+    const [itemvisible, setItemVisible] = React.useState(false);
+    const showItemDialog = () => setItemVisible(true);
+    const hideItemDialog = () => setItemVisible(false);
+
     const [page, setPage] = React.useState<number>(0);
-    const [numberOfItemsPerPageList] = React.useState([5, 10, 20, 50]);
+    const [numberOfItemsPerPageList] = React.useState([10, 20, 50, 100]);
     const [itemsPerPage, onItemsPerPageChange] = React.useState(
         numberOfItemsPerPageList[0]
     );
@@ -39,6 +45,30 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
     const [selectedItem, setSelectedItem] = useState([]);
 
 
+
+    const [name, setName] = React.useState("");
+    const [code, setCode] = React.useState("");
+    const [description, setDescription] = React.useState("");
+    const [qrCode, setQrCode] = React.useState("");
+    const [zone, setZone] = React.useState("");
+    const [location1, setLocation1] = React.useState("");
+    const [location2, setLocation2] = React.useState("");
+    const [location3, setLocation3] = React.useState("");
+    const [date, setDate] = React.useState(new Date());
+
+    const [open, setOpen] = React.useState(false);
+
+    const onDismissSingle = React.useCallback(() => {
+        setOpen(false);
+    }, [setOpen]);
+
+    const onConfirmSingle = React.useCallback(
+        (params) => {
+            setOpen(false);
+            setDate(params.date);
+        },
+        [setOpen, setDate]
+    );
 
 
     const contentToPrint = useRef(null);
@@ -49,16 +79,31 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
         removeAfterPrint: true,
     });
 
+    const formatDate = (dateString: string | Date) => {
+        // Parse the date string
+        const date = new Date(dateString);
 
+        // Extract day, month, and year
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const year = date.getFullYear();
+
+        // Format the date as "dd.mm.yyyy"
+        const formattedDate = `${day}.${month}.${year}`;
+
+        return formattedDate;
+    };
 
 
     const fetchAllItems = async () => {
 
-        const response = await fetch(`https://six-lizards-fix.loca.lt/items`);
+        const response = await fetch(`https://short-hoops-unite.loca.lt/items`);
         const responseData = await response.json();
         // console.log(responseData)
         setItemData(responseData);
     };
+
+
 
     useEffect(() => {
         fetchAllItems()
@@ -68,37 +113,56 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
 
     }, [itemData]);
 
-    const [items] = React.useState([
-        {
-            key: 1,
-            name: 'Cupcake',
-            calories: 356,
-            fat: 16,
-        },
-        {
-            key: 2,
-            name: 'Eclair',
-            calories: 262,
-            fat: 16,
-        },
-        {
-            key: 3,
-            name: 'Frozen yogurt',
-            calories: 159,
-            fat: 6,
-        },
-        {
-            key: 4,
-            name: 'Gingerbread',
-            calories: 305,
-            fat: 3.7,
-        },
-    ]);
-
     const rowClick = async (item: any) => {
         setSelectedItem(item);
         showDialog();
         // console.log(item);
+    }
+
+    const addItem = async (item: any) => {
+        setItemVisible(true)
+        // console.log("adauga");
+    }
+
+    const saveData = async () => {
+        console.log(name, code, description, qrCode, zone, location1, location2, location3, date)
+
+
+        interface Item {
+            name: String,
+            code: String,
+            description: String,
+            qrCode: String,
+            expirationDate: Date,
+            zone: String,
+            location1: String,
+            location2: String,
+            location3: String
+        }
+
+        let Item: Item = {
+            name: name,
+            code: code,
+            description: description,
+            qrCode: qrCode,
+            expirationDate: date,
+            zone: zone,
+            location1: location1,
+            location2: location2,
+            location3: location3
+        }
+
+        try {
+            const response = await axios.post(`https://short-hoops-unite.loca.lt/items`,
+                Item
+            );
+            hideItemDialog()
+            console.log('Item added:', response.data);
+        } catch (error) {
+            console.error('Error editing item:', error);
+        }
+
+
     }
 
 
@@ -115,12 +179,10 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
         <SafeAreaView style={styles.container}>
 
             <View>
-
                 <Portal>
                     <Dialog visible={visible} onDismiss={hideDialog}>
                         <Dialog.Title>Info Articol</Dialog.Title>
                         <Dialog.Content>
-
                             <Card>
                                 <Card.Title title="" subtitle="" />
                                 <Card.Content>
@@ -128,26 +190,25 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
                                         <QRCode value={selectedItem.qrCode} size={140} />
                                         <Text> </Text>
                                         <Divider />
+                                        <Text> </Text>
                                         <Text>ID: {selectedItem.id}</Text>
                                         <Text>Name: {selectedItem.name}</Text>
                                         <Text>Code: {selectedItem.code}</Text>
                                         <Text>Description: {selectedItem.description}</Text>
                                         <Text>QR Code: {selectedItem.qrCode}</Text>
-                                        <Text>Expiration Date: {selectedItem.expirationDate}</Text>
+                                        <Text>Expiration Date: {formatDate(selectedItem.expirationDate)}</Text>
                                         <Text>Zone: {selectedItem.zone}</Text>
                                         <Text>Location 1: {selectedItem.location1}</Text>
                                         <Text>Location 2: {selectedItem.location2}</Text>
                                         <Text>Location 3: {selectedItem.location3}</Text>
                                     </View>
                                 </Card.Content>
-
                                 <Card.Actions>
                                     <Button onPress={() => {
                                         handlePrint(null, () => contentToPrint.current);
                                     }}>Tipareste</Button>
                                 </Card.Actions>
                             </Card>
-
                         </Dialog.Content>
                         <Dialog.Actions>
                             <Button onPress={hideDialog}>Inchide</Button>
@@ -158,31 +219,122 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
 
 
             <View style={styles.buttonContainer}>
-                {/* <Button title="Scanare" onPress={() => navigation.navigate('Scanare')} /> */}
-
-                <Button icon="camera" mode="contained" onPress={() => navigation.navigate('Scanare')}>
+                <Button icon="barcode-scan" mode="contained" onPress={() => navigation.navigate('Scanare')}>
                     Scanare
                 </Button>
-
-
             </View>
+
+
+
+            <View style={styles.left}>
+                <Button icon="card-plus-outline" mode="contained" onPress={addItem}>
+                    Adaugare
+                </Button>
+            </View>
+
+            <View>
+                <Portal>
+                    <Dialog visible={itemvisible} onDismiss={hideItemDialog}>
+                        <Dialog.Title>Adaugare Articol</Dialog.Title>
+                        <Dialog.Content>
+                            <Card>
+                                <Card.Title title="" subtitle="" />
+                                <Card.Content>
+                                    <View style={{ margin: 20 }}>
+
+                                        <TextInput
+                                            label="Denumire"
+                                            value={name}
+                                            onChangeText={text => setName(text)}
+                                        />
+                                        <TextInput
+                                            label="Cod"
+                                            value={code}
+                                            onChangeText={text => setCode(text)}
+                                        />
+                                        <TextInput
+                                            label="Descriere"
+                                            value={description}
+                                            onChangeText={text => setDescription(text)}
+                                        />
+                                        <TextInput
+                                            label="Cod QR"
+                                            value={qrCode}
+                                            onChangeText={text => setQrCode(text)}
+                                        />
+                                        <TextInput
+                                            label="Zona"
+                                            value={zone}
+                                            onChangeText={text => setZone(text)}
+                                        />
+                                        <TextInput
+                                            label="Location 1"
+                                            value={location1}
+                                            onChangeText={text => setLocation1(text)}
+                                        />
+                                        <TextInput
+                                            label="Location 2"
+                                            value={location2}
+                                            onChangeText={text => setLocation2(text)}
+                                        />
+                                        <TextInput
+                                            label="Location 3"
+                                            value={location3}
+                                            onChangeText={text => setLocation3(text)}
+                                        />
+                                        <TextInput
+                                            label="Data Expirare"
+                                            disabled={true}
+                                            value={formatDate(date)}
+
+                                        />
+                                        <DatePickerModal
+                                            locale="en"
+                                            mode="single"
+                                            visible={open}
+                                            onDismiss={onDismissSingle}
+                                            date={date}
+                                            onConfirm={onConfirmSingle}
+                                        />
+                                        <Button icon="calendar" onPress={() => setOpen(true)} uppercase={false} mode="outlined">
+                                            Data Expirare
+                                        </Button>
+
+                                        <Divider />
+
+                                    </View>
+                                </Card.Content>
+                                <Card.Actions>
+                                    <Button onPress={saveData} >Salveaza</Button>
+                                </Card.Actions>
+                            </Card>
+                        </Dialog.Content>
+                        <Dialog.Actions>
+                            <Button onPress={hideItemDialog}>Inchide</Button>
+                        </Dialog.Actions>
+                    </Dialog>
+                </Portal>
+            </View>
+
 
             <DataTable>
                 <DataTable.Header>
 
                     <DataTable.Title>Denumire</DataTable.Title>
                     <DataTable.Title>QrCode</DataTable.Title>
-                    <DataTable.Title numeric>Id</DataTable.Title>
+                    <DataTable.Title>Data Expirare</DataTable.Title>
 
                 </DataTable.Header>
 
                 {itemData.slice(from, to).map((item) => (
-                    <DataTable.Row key={item.id}>
+                    <DataTable.Row key={item.id} onPress={() => rowClick(item)}>
 
 
                         <DataTable.Cell>{item.name}</DataTable.Cell>
                         <DataTable.Cell>{item.qrCode}</DataTable.Cell>
-                        <DataTable.Cell numeric onPress={() => rowClick(item)}>{item.id}</DataTable.Cell>
+                        <DataTable.Cell>{formatDate(item.expirationDate)}</DataTable.Cell>
+
+                        {/* <DataTable.Cell numeric>{item.id}</DataTable.Cell> */}
                     </DataTable.Row>
                 ))}
 
@@ -198,36 +350,6 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
                     selectPageDropdownLabel={'Rows per page'}
                 />
             </DataTable>
-
-
-            {/* <DataTable>
-                <DataTable.Header>
-                    <DataTable.Title>Dessert</DataTable.Title>
-                    <DataTable.Title numeric>Calories</DataTable.Title>
-                    <DataTable.Title numeric>Fat</DataTable.Title>
-                </DataTable.Header>
-
-                {items.slice(from, to).map((item) => (
-                    <DataTable.Row key={item.key}>
-                        <DataTable.Cell>{item.name}</DataTable.Cell>
-                        <DataTable.Cell numeric>{item.calories}</DataTable.Cell>
-                        <DataTable.Cell numeric>{item.fat}</DataTable.Cell>
-                    </DataTable.Row>
-                ))}
-
-                <DataTable.Pagination
-                    page={page}
-                    numberOfPages={Math.ceil(items.length / itemsPerPage)}
-                    onPageChange={(page) => setPage(page)}
-                    label={`${from + 1}-${to} of ${items.length}`}
-                    numberOfItemsPerPageList={numberOfItemsPerPageList}
-                    numberOfItemsPerPage={itemsPerPage}
-                    onItemsPerPageChange={onItemsPerPageChange}
-                    showFastPaginationControls
-                    selectPageDropdownLabel={'Rows per page'}
-                />
-            </DataTable> */}
-
         </SafeAreaView>
     );
 };
@@ -243,6 +365,12 @@ const styles = StyleSheet.create({
         position: 'absolute', // Position the button absolutely within its container
         top: 0, // Align the button to the bottom
         right: 0, // Align the button to the right
+    },
+    left: {
+        flex: 1,
+        justifyContent: 'flex-start',
+        top: 0,
+        left: 0,
     },
     text: {
         fontSize: 16,

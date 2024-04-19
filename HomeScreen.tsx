@@ -2,7 +2,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import {
-    View, Text, Button, Pressable, StyleSheet,
+    View, Text, Pressable, StyleSheet,
     SafeAreaView, TextInput,
     Alert, Modal,
     ActivityIndicator, FlatList, SectionList, StatusBar, Image
@@ -14,6 +14,9 @@ import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-ca
 import QRCode from 'react-native-qrcode-svg';
 import { useFonts } from 'expo-font';
 import { Link } from 'expo-router';
+import {
+    DataTable, Button, Dialog, Portal, PaperProvider, Avatar, Card, Divider
+} from 'react-native-paper';
 
 type HomeScreenProps = {
     navigation: StackNavigationProp<RootStackParamList, 'Scanare'>;
@@ -52,7 +55,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         setText(data);
         setModalVisible(true);
         setInactiveCamera();
-        const response = await fetch(`https://chatty-carrots-enjoy.loca.lt/items/find/${data}`);
+        const response = await fetch(`https://short-hoops-unite.loca.lt/items/find/${data}`);
         const responseData = await response.json();
         setItemData(responseData);
         // console.log(
@@ -92,10 +95,15 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </CameraView>
             )}
 
-            <View style={styles.buttonContainer}>
+            {/* <View style={styles.buttonContainer}>
                 <Button title="Admin" onPress={() => navigation.navigate('Administrare')} />
-            </View>
+            </View> */}
 
+            <View style={styles.buttonContainer}>
+                <Button mode="contained" icon="contain" onPress={() => navigation.navigate('Administrare')}>
+                    Admin
+                </Button>
+            </View>
 
 
             {/* <Pressable
@@ -164,7 +172,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </View>
 
 
-            <Button title="Scaneaza" onPress={setActiveCamera} />
+            {/* <Button title="Scaneaza" onPress={setActiveCamera} /> */}
+
+            <Button mode="contained" icon="barcode-scan" onPress={setActiveCamera}>
+                Scaneaza
+            </Button>
+
 
         </SafeAreaView>
     );

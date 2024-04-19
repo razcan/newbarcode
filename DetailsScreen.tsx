@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import {
     View,
     // Button, 
-    Pressable, StyleSheet, SafeAreaView, NativeModules
+    Pressable, StyleSheet, SafeAreaView, NativeModules,
+    ScrollView
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './AppNavigator';
@@ -13,10 +14,6 @@ import {
     Card, Divider
 } from 'react-native-paper';
 import QRCode from 'react-native-qrcode-svg';
-// import PDFLib, { PDFDocument, PDFPage, PDFText } from 'react-native-pdf-lib';
-// import RNHTMLtoPDF from 'react-native-html-to-pdf';
-// import RNHTMLtoPDF from 'react-native-html-to-pdf';
-// import RNPrint from 'react-native-print';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 import { DatePickerModal } from 'react-native-paper-dates';
@@ -43,7 +40,6 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
     );
     const [itemData, setItemData] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
-
 
 
     const [name, setName] = React.useState("");
@@ -104,7 +100,6 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
     };
 
 
-
     useEffect(() => {
         fetchAllItems()
     }, []);
@@ -161,10 +156,7 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
         } catch (error) {
             console.error('Error editing item:', error);
         }
-
-
     }
-
 
     const from = page * itemsPerPage;
     const to = Math.min((page + 1) * itemsPerPage, itemData.length);
@@ -178,39 +170,95 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
 
-            <View>
+            <View style={styles.container}>
                 <Portal>
-                    <Dialog visible={visible} onDismiss={hideDialog}>
+                    <Dialog
+                        style={{
+                            width: 300
+                            // ,flex: 0.82 
+                        }}
+                        visible={visible} onDismiss={hideDialog}>
                         <Dialog.Title>Info Articol</Dialog.Title>
                         <Dialog.Content>
-                            <Card>
-                                <Card.Title title="" subtitle="" />
-                                <Card.Content>
-                                    <View ref={contentToPrint} style={{ margin: 20 }}>
-                                        <QRCode value={selectedItem.qrCode} size={140} />
-                                        <Text> </Text>
-                                        <Divider />
-                                        <Text> </Text>
-                                        <Text>ID: {selectedItem.id}</Text>
-                                        <Text>Name: {selectedItem.name}</Text>
-                                        <Text>Code: {selectedItem.code}</Text>
-                                        <Text>Description: {selectedItem.description}</Text>
-                                        <Text>QR Code: {selectedItem.qrCode}</Text>
-                                        <Text>Expiration Date: {formatDate(selectedItem.expirationDate)}</Text>
-                                        <Text>Zone: {selectedItem.zone}</Text>
-                                        <Text>Location 1: {selectedItem.location1}</Text>
-                                        <Text>Location 2: {selectedItem.location2}</Text>
-                                        <Text>Location 3: {selectedItem.location3}</Text>
-                                    </View>
-                                </Card.Content>
-                                <Card.Actions>
-                                    <Button onPress={() => {
-                                        handlePrint(null, () => contentToPrint.current);
-                                    }}>Tipareste</Button>
-                                </Card.Actions>
-                            </Card>
+                            <ScrollView >
+                                <View ref={contentToPrint} style={{
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    marginBottom: 5
+                                }}>
+                                    <QRCode value={selectedItem.qrCode} size={100} />
+                                </View>
+
+                                <View style={{ margin: 2 }}>
+
+                                    <TextInput
+                                        label="Denumire"
+
+                                        value={selectedItem.name}
+                                        onChangeText={text => setName(text)}
+                                    />
+                                    <TextInput
+                                        label="Cod"
+                                        value={selectedItem.code}
+                                        onChangeText={text => setCode(text)}
+                                    />
+                                    <TextInput
+                                        label="Descriere"
+                                        value={selectedItem.description}
+                                        onChangeText={text => setDescription(text)}
+                                    />
+                                    <TextInput
+                                        label="Cod QR"
+                                        value={selectedItem.qrCode}
+                                        onChangeText={text => setQrCode(text)}
+                                    />
+                                    <TextInput
+                                        label="Zona"
+                                        value={selectedItem.zone}
+                                        onChangeText={text => setZone(text)}
+                                    />
+                                    <TextInput
+                                        label="Location 1"
+                                        value={selectedItem.location1}
+                                        onChangeText={text => setLocation1(text)}
+                                    />
+                                    <TextInput
+                                        label="Location 2"
+                                        value={selectedItem.location2}
+                                        onChangeText={text => setLocation2(text)}
+                                    />
+                                    <TextInput
+                                        label="Location 3"
+                                        value={selectedItem.location3}
+                                        onChangeText={text => setLocation3(text)}
+                                    />
+                                    <TextInput
+                                        label="Data Expirare"
+                                        disabled={true}
+                                        value={formatDate(selectedItem.expirationDate)}
+
+                                    />
+                                    <DatePickerModal
+                                        locale="en"
+                                        mode="single"
+                                        visible={open}
+                                        onDismiss={onDismissSingle}
+                                        date={date}
+                                        onConfirm={onConfirmSingle}
+                                    />
+                                    <Button icon="calendar" onPress={() => setOpen(true)} uppercase={false} mode="outlined">
+                                        Data Expirare
+                                    </Button>
+
+                                    <Divider />
+
+                                </View>
+                            </ScrollView>
                         </Dialog.Content>
                         <Dialog.Actions>
+                            <Button onPress={() => {
+                                handlePrint(null, () => contentToPrint.current);
+                            }}>Tipareste</Button>
                             <Button onPress={hideDialog}>Inchide</Button>
                         </Dialog.Actions>
                     </Dialog>
@@ -232,84 +280,79 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
                 </Button>
             </View>
 
-            <View>
+            <View style={styles.container}>
                 <Portal>
-                    <Dialog visible={itemvisible} onDismiss={hideItemDialog}>
+                    <Dialog style={{ width: 300 }} visible={itemvisible} onDismiss={hideItemDialog}>
                         <Dialog.Title>Adaugare Articol</Dialog.Title>
                         <Dialog.Content>
-                            <Card>
-                                <Card.Title title="" subtitle="" />
-                                <Card.Content>
-                                    <View style={{ margin: 20 }}>
 
-                                        <TextInput
-                                            label="Denumire"
-                                            value={name}
-                                            onChangeText={text => setName(text)}
-                                        />
-                                        <TextInput
-                                            label="Cod"
-                                            value={code}
-                                            onChangeText={text => setCode(text)}
-                                        />
-                                        <TextInput
-                                            label="Descriere"
-                                            value={description}
-                                            onChangeText={text => setDescription(text)}
-                                        />
-                                        <TextInput
-                                            label="Cod QR"
-                                            value={qrCode}
-                                            onChangeText={text => setQrCode(text)}
-                                        />
-                                        <TextInput
-                                            label="Zona"
-                                            value={zone}
-                                            onChangeText={text => setZone(text)}
-                                        />
-                                        <TextInput
-                                            label="Location 1"
-                                            value={location1}
-                                            onChangeText={text => setLocation1(text)}
-                                        />
-                                        <TextInput
-                                            label="Location 2"
-                                            value={location2}
-                                            onChangeText={text => setLocation2(text)}
-                                        />
-                                        <TextInput
-                                            label="Location 3"
-                                            value={location3}
-                                            onChangeText={text => setLocation3(text)}
-                                        />
-                                        <TextInput
-                                            label="Data Expirare"
-                                            disabled={true}
-                                            value={formatDate(date)}
+                            <ScrollView>
 
-                                        />
-                                        <DatePickerModal
-                                            locale="en"
-                                            mode="single"
-                                            visible={open}
-                                            onDismiss={onDismissSingle}
-                                            date={date}
-                                            onConfirm={onConfirmSingle}
-                                        />
-                                        <Button icon="calendar" onPress={() => setOpen(true)} uppercase={false} mode="outlined">
-                                            Data Expirare
-                                        </Button>
+                                <TextInput
+                                    label="Denumire"
+                                    value={name}
+                                    onChangeText={text => setName(text)}
+                                />
+                                <TextInput
+                                    label="Cod"
+                                    value={code}
+                                    onChangeText={text => setCode(text)}
+                                />
+                                <TextInput
+                                    label="Descriere"
+                                    value={description}
+                                    onChangeText={text => setDescription(text)}
+                                />
+                                <TextInput
+                                    label="Cod QR"
+                                    value={qrCode}
+                                    onChangeText={text => setQrCode(text)}
+                                />
+                                <TextInput
+                                    label="Zona"
+                                    value={zone}
+                                    onChangeText={text => setZone(text)}
+                                />
+                                <TextInput
+                                    label="Location 1"
+                                    value={location1}
+                                    onChangeText={text => setLocation1(text)}
+                                />
+                                <TextInput
+                                    label="Location 2"
+                                    value={location2}
+                                    onChangeText={text => setLocation2(text)}
+                                />
+                                <TextInput
+                                    label="Location 3"
+                                    value={location3}
+                                    onChangeText={text => setLocation3(text)}
+                                />
+                                <TextInput
+                                    label="Data Expirare"
+                                    disabled={true}
+                                    value={formatDate(date)}
 
-                                        <Divider />
+                                />
+                                <DatePickerModal
+                                    locale="en"
+                                    mode="single"
+                                    visible={open}
+                                    onDismiss={onDismissSingle}
+                                    date={date}
+                                    onConfirm={onConfirmSingle}
+                                />
+                                <Button icon="calendar" onPress={() => setOpen(true)} uppercase={false} mode="outlined">
+                                    Data Expirare
+                                </Button>
 
-                                    </View>
-                                </Card.Content>
-                                <Card.Actions>
-                                    <Button onPress={saveData} >Salveaza</Button>
-                                </Card.Actions>
-                            </Card>
+                                <Divider />
+
+                            </ScrollView>
+
                         </Dialog.Content>
                         <Dialog.Actions>
+                            <Button onPress={saveData} >Salveaza</Button>
                             <Button onPress={hideItemDialog}>Inchide</Button>
                         </Dialog.Actions>
                     </Dialog>
@@ -367,8 +410,7 @@ const styles = StyleSheet.create({
         right: 0, // Align the button to the right
     },
     left: {
-        flex: 1,
-        justifyContent: 'flex-start',
+        position: 'absolute',
         top: 0,
         left: 0,
     },

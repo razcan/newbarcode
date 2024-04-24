@@ -21,16 +21,29 @@ import {
 type HomeScreenProps = {
     navigation: StackNavigationProp<RootStackParamList, 'Scanare'>;
 };
+import Constants from 'expo-constants';
+import API_URL from './utils/config_ip.json'
+import param from './eas.json'
+// "test": {
+//     "env": {
+//         "EXPO_PUBLIC_API_URL"
+
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
+    const EXPO_PUBLIC_API_URL = param.build.production.env.EXPO_PUBLIC_API_URL;
+    console.log(EXPO_PUBLIC_API_URL, "EXPO_PUBLIC_API_URL");
+
     const [permission, requestPermission] = useCameraPermissions();
     const [text, setText] = useState();
-    const [data, setData] = useState('https://softhub.ro');
     const [itemData, setItemData] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [showCamera, setShowCamera] = useState(false);
 
+
+    // const API_URL = Constants.manifest.extra.API_URL;
+    // const eas = Constants.manifest.extra.eas;
+    console.log(API_URL, "API_URL")
 
     const setActiveCamera = () => {
         setShowCamera(true);
@@ -55,7 +68,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         setText(data);
         setModalVisible(true);
         setInactiveCamera();
-        const response = await fetch(`https://short-hoops-unite.loca.lt/items/find/${data}`);
+        // const response = await fetch(`${API_URL.API_URL}/items/find/${data}`);
+        const response = await fetch(`${API_URL.API_URL}/items/find/${data}`);
         const responseData = await response.json();
         setItemData(responseData);
         // console.log(

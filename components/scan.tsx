@@ -9,10 +9,11 @@ import {
 
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from './AppNavigator';
+import { RootStackParamList } from '../AppNavigator';
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera/next';
 import QRCode from 'react-native-qrcode-svg';
 import { useFonts } from 'expo-font';
+import Constants from 'expo-constants';
 
 type HomeScreenProps = {
     navigation: StackNavigationProp<RootStackParamList, 'Scanare'>;
@@ -22,7 +23,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
     const [permission, requestPermission] = useCameraPermissions();
     const [text, setText] = useState();
-    const [data, setData] = useState('https://softhub.ro');
     const [itemData, setItemData] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [showCamera, setShowCamera] = useState(false);
@@ -51,7 +51,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         setText(data);
         setModalVisible(true);
         setInactiveCamera();
-        const response = await fetch(`https://chatty-carrots-enjoy.loca.lt/items/find/${data}`);
+        const response = await fetch(`https://modern-dodos-invent.loca.lt/items/find/${data}`);
         const responseData = await response.json();
         setItemData(responseData);
         // console.log(

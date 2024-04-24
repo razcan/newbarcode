@@ -18,6 +18,7 @@ import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 import { DatePickerModal } from 'react-native-paper-dates';
 import axios from 'axios';
+import API_URL from './utils/config_ip.json'
 
 type DetailsScreenProps = {
     navigation: StackNavigationProp<RootStackParamList, 'Administrare'>;
@@ -25,6 +26,7 @@ type DetailsScreenProps = {
 
 const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
 
+    console.log(API_URL.API_URL, "API_URL")
     const [visible, setVisible] = React.useState(false);
     const showDialog = () => setVisible(true);
     const hideDialog = () => setVisible(false);
@@ -93,7 +95,12 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
 
     const fetchAllItems = async () => {
 
-        const response = await fetch(`https://short-hoops-unite.loca.lt/items`);
+        // const response = await fetch(`${API_URL.API_URL}/items`, {
+        //     method: 'GET', // Or 'POST', 'PUT', etc.
+        //     mode: 'no-cors',
+        // });
+
+        const response = await fetch(`${API_URL.API_URL}/items`);
         const responseData = await response.json();
         // console.log(responseData)
         setItemData(responseData);
@@ -120,7 +127,7 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
     }
 
     const saveData = async () => {
-        console.log(name, code, description, qrCode, zone, location1, location2, location3, date)
+        // console.log(name, code, description, qrCode, zone, location1, location2, location3, date)
 
 
         interface Item {
@@ -148,7 +155,7 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
         }
 
         try {
-            const response = await axios.post(`https://short-hoops-unite.loca.lt/items`,
+            const response = await axios.post(`${API_URL.API_URL}/items`,
                 Item
             );
             hideItemDialog()

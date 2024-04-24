@@ -2,10 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Pressable, StyleSheet, SafeAreaView } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from './AppNavigator';
+import { RootStackParamList } from '../AppNavigator';
 import { Badge } from 'react-native-paper';
 import { DataTable } from 'react-native-paper';
-
+import Constants from 'expo-constants';
 
 type DetailsScreenProps = {
     navigation: StackNavigationProp<RootStackParamList, 'Administrare'>;
@@ -20,9 +20,12 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
     );
     const [itemData, setItemData] = useState([]);
 
+    const API_URL = Constants.manifest.extra.API_URL;
+    console.log(API_URL, "API_URL")
+
     const fetchAllItems = async () => {
 
-        const response = await fetch(`https://chatty-carrots-enjoy.loca.lt/items`);
+        const response = await fetch(`${API_URL}/items`);
         const responseData = await response.json();
         console.log(responseData)
         setItemData(responseData);

@@ -6,6 +6,15 @@ npx expo install expo-router react-native-safe-area-context react-native-screens
 npm run web
 
 
+https://callstack.github.io/react-native-paper/docs/guides/icons
+https://reactnative.dev/docs/colors
+https://reactnative.dev/docs/text-style-props
+https://github.com/MatthewHerbst/react-to-print
+https://codesandbox.io/p/sandbox/magical-babycat-rzdhd?file=%2Fexamples%2FCustomPrint%2Findex.js%3A3%2C1
+https://www.npmjs.com/package/react-native-paper-dates
+https://web-ridge.github.io/react-native-paper-dates/docs/date-picker/single-date-picker
+https://docs.expo.dev/router/navigating-pages/
+
 
 => Linking Binary 'ngrok' to '/usr/local/bin/ngrok'
 
@@ -18,7 +27,7 @@ aici se genereaza un link extern
 ngrok http http://localhost:8080
 
 aici se seteaza o variabila cu linkul generat de ngrok
-export EXPO_PACKAGER_PROXY_URL=https://easy-signs-deny.loca.lt
+export EXPO_PACKAGER_PROXY_URL=https://red-jokes-draw.loca.lt
 
 aici se porneste aplicatia - scanare qr si este ok
 npx expo start
@@ -27,6 +36,12 @@ https://docs.expo.dev/versions/latest/sdk/camera-next/#barcodesettings
 
 https://github.com/expo/expo/issues/26687
 https://github.com/stefan-schweiger?tab=repositories
+
+to build apk:
+eas build -p android --profile preview
+https://docs.expo.dev/build-reference/apk/
+
+
 
 Libraries that are used in this template:
 Navigation: react-navigation V6
